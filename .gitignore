@@ -1,7 +1,11 @@
 data/out/*
+!data/report/.gitkeep
+
 data/report/*
+!data/report/.gitkeep
 
 dyslexia_env/
 
 logs/*
+!logs/.gitkeep
 
