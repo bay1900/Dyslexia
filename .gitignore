@@ -7,5 +7,5 @@ data/report/*
 dyslexia_env/
 
 logs/*
-!logs/.gitkeep
+logs/.gitleep
 
