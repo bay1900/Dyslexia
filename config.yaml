@@ -1,0 +1,15 @@
+http:
+  User-Agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+  timeout: 100
+
+file_path:
+  input_csv : "data/in/in.csv"
+  output_csv: 'data/out'
+
+reddit:
+  post_base_url   : "https://www.reddit.com/r/{SUBREDDIT}.json"
+  comment_base_url: "https://www.reddit.com/comments/{POST_ID}.json"
+  delay_between_requests: 10
+
+report:
+  output_file: 'data/report/report.json'
