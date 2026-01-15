@@ -11,3 +11,6 @@ logs/*
 
 cleaned/*
 !cleaned/.gitkeep
+
+
+.DS_Store
