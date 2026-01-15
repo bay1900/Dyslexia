@@ -13,3 +13,11 @@ reddit:
 
 report:
   output_file: 'data/report/report.json'
+
+cleaning: 
+  output_path: 'data/cleaned/concatenated_data.csv'
+  word_length: 3 
+  author_filter_trigger: True # ADD AUTHOR FILTERING
+  author_filter: 
+    - '[deleted]' # DATA DELETED BY USER
+    - '[removed]' # DATA REMOVED BY MODERATOR

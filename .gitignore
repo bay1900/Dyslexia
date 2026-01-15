@@ -9,3 +9,5 @@ dyslexia_env/
 logs/*
 !logs/.gitkeep
 
+cleaned/*
+!cleaned/.gitkeep
