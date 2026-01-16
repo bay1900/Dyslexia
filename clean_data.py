@@ -4,7 +4,7 @@ import seaborn as sns
 import re
 import json
 import os 
-from utils.file import read_csv, read_yaml
+from utils.file import read_csv, read_yaml, write_json
 
 # LOGGER
 from utils.logger import get_logger
@@ -136,7 +136,7 @@ report["sumary"] = {
                    }   
 logger.info("finished generating cleaning report summary")
 # print ( "report : " , json.dumps(report, indent=4) )
-
+write_json ( cleaning_config["output_report"], report)
 
 # SAVE TO CSV
 logger.info("exporting cleaned and concatenated dataframe to csv")

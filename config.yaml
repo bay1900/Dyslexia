@@ -15,7 +15,8 @@ report:
   output_file: 'data/report/report.json'
 
 cleaning: 
-  output_path: 'data/cleaned/concatenated_data.csv'
+  output_report: "./data/report/data_cleaning_report.json"
+  output_path: 'data/cleaned/cleaned_data.csv'
   word_length: 3 
   author_filter_trigger: True # ADD AUTHOR FILTERING
   author_filter: 
