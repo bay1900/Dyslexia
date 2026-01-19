@@ -28,13 +28,26 @@ logger.info(f"-- finished scanning folder, found {len(file_names)} csv files --"
 # INITIALIZE REPORT DICTIONARY
 report = { "info": None,
            "sumary": None,
-           "data": [] }
+           "data": [],
+           "hist": [] }
 
 df_concatenated = []
 for i, file in enumerate(file_names):
+    # 1. INITIALIZE LOG
+    processing_log = []
     
+    # ************** STEP 1 **************
+
     # LOAD DATASET
-    df = pd.read_csv( file)
+    df = pd.read_csv( file )
+    
+    # LOG STEP 1: INITIAL LOAD
+    processing_log.append({
+        "step": "1_load_data",
+        "description": "Raw data loaded from CSV",
+        "rows_remaining": len(df),
+        "rows_removed": 0
+    })
     
     data_info   = {}
     config_info = {}
@@ -52,6 +65,8 @@ for i, file in enumerate(file_names):
         
         report["info"] = config_info
         logger.info(f"-- dataset overview information gathered --")
+    
+    # ************** STEP 2 **************
     
     # parent_id COLUMN IN CSV INDICATE STATUS OF EACH DATA ROW
     # parent_id = NULL     = POST
@@ -72,7 +87,16 @@ for i, file in enumerate(file_names):
     short_post_pct   = round( float((short_post_count / num_posts) * 100 ), 2 )
     # ERASE SHORT POSTS
     df = df[~short_post]
-        
+    
+    processing_log.append({
+        "step": "2_rmd_short_posts",
+        "description": f"Removed posts with fewer than {cleaning_config["word_length"]} words",
+        "rows_remaining": len(df),
+        "rows_removed": int(short_post_count)
+    })
+    
+    # ************** STEP 3 **************
+    
     # ERASE POSTS FROM SPECIFIC AUTHORS
     # [deleted] = DATA DELETED BY USER
     # [removed] = DATA REMOVED BY MODERATOR
@@ -84,6 +108,13 @@ for i, file in enumerate(file_names):
         df = df[~df['author'].isin(cleaning_config["author_filter"])] 
     
     logger.info(f"removed {short_post_count} short posts with less than {cleaning_config['word_length']} words")
+    
+    processing_log.append({
+        "step": "3_rmd_author",
+        "description": f"Removed posts from specific authors ( reddit specific )",
+        "rows_remaining": len(df),
+        "rows_removed": int(post_rm_author)
+    })
 
     df_concatenated.append(df)
 
@@ -101,6 +132,12 @@ for i, file in enumerate(file_names):
     data_info["post_rmd_author_pct"] = post_rm_author_pct
     
     report["data"].append(data_info)
+    
+    # --- SAVE THE LOG ---
+    report["hist"].append ({ 
+            "file": file,
+            "history": processing_log
+                           })
     
     logger.info(f"finished cleaning dataset : {file}")
     
@@ -135,6 +172,8 @@ report["sumary"] = {
                     "post_rmd_author_pct": round( (sum(post_rmd_author) / sum(post_total)) * 100 , 2 )
                    }   
 logger.info("finished generating cleaning report summary")
+
+
 # print ( "report : " , json.dumps(report, indent=4) )
 write_json ( cleaning_config["output_report"], report)
 
