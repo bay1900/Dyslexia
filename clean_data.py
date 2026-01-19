@@ -40,7 +40,7 @@ for i, file in enumerate(file_names):
 
     # LOAD DATASET
     df = pd.read_csv( file )
-    
+    posts_total = len(df)
     # LOG STEP 1: INITIAL LOAD
     processing_log.append({
         "step": "1_load_data",
@@ -72,8 +72,8 @@ for i, file in enumerate(file_names):
     # parent_id = NULL     = POST
     # parent_id = NOT NULL = REPLY
     replies   = int(df['parent_id'].notna().sum())     # REPLIES
-    posts     = int(num_posts - replies) # POSTS TITLE
-    reply_pct = round( float((replies / num_posts) * 100 ), 2 )  # REPLIES IN %
+    posts     = int(posts_total - replies) # POSTS TITLE
+    reply_pct = round( float((replies / posts_total) * 100 ), 2 )  # REPLIES IN %
     posts_pct = round(float(100 - reply_pct), 2)                 # POST IN %
 
     # ADD word_count COLUMN
@@ -84,7 +84,7 @@ for i, file in enumerate(file_names):
     df['word_count'] = df['text'].fillna('').apply(lambda x: len(str(x).split()))
     short_post = df['word_count'] < cleaning_config["word_length"]
     short_post_count = int(short_post.sum())
-    short_post_pct   = round( float((short_post_count / num_posts) * 100 ), 2 )
+    short_post_pct   = round( float((short_post_count / posts_total) * 100 ), 2 )
     # ERASE SHORT POSTS
     df = df[~short_post]
     
@@ -121,7 +121,7 @@ for i, file in enumerate(file_names):
     # REPORT DATA
     data_info["csv_id"]      = "out_DyslexicParents"
     data_info["subreddit"]   = "out_DyslexicParents"
-    data_info["post_total"]  = num_posts
+    data_info["post_total"]  = posts_total
     data_info["posts"]       = posts
     data_info["posts_pct"]   = posts_pct
     data_info["replies"]     = replies
