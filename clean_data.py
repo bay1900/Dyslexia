@@ -5,6 +5,10 @@ import re
 import json
 import os 
 from utils.file import read_csv, read_yaml, write_json
+from gensim.parsing.preprocessing import STOPWORDS # STOP WORD LIST
+
+# STOP WORDS
+stopwords = set(STOPWORDS)
 
 # LOGGER
 from utils.logger import get_logger
@@ -17,8 +21,13 @@ cleaning_config= config[1]["cleaning"]
 
 def text_process(text): 
     text = str(text).lower()            # LOWERCASE TEXT
+    text = re.sub(r'https?://\S+|www\.\S+', '', text) # REMOVE LINKS
     text = re.sub(r'[^\w\s]', '', text) # REMOVE PUNCTUATION
-    return text
+    
+    # REMOVE STOPWORDS
+    words = text.split()
+    text = [w for w in words if w not in stopwords] # REMOVE STOPWORDS
+    return " ".join( text )
 
 
 # GET ALL CSV FILES IN OUTPUTFOLDER
@@ -126,9 +135,22 @@ for i, file in enumerate(file_names):
     # ************** STEP 4 **************
     
     # LOWER TEXT, REMOVE PUNCTUATION, REMOVE STOP WORDS
+    textprocess_count_before = int(df['text'].str.split().str.len().sum())
+    df["text"]        = df["text"].apply( text_process )
+    textprocess_count_after  = int(df['text'].str.split().str.len().sum())
     
-    df["text"] = df["text"].apply( text_process )
+    print ( textprocess_count_before, " - ", textprocess_count_after )
     
+    processing_log.append({
+        "step": "4_text_process",
+        "description": f"Lower case text, Removed links, punctuation, stopwords",
+        "rows_remaining": len(df),
+        "rows_removed": 0,
+        "text_process": { 
+            "count_before" : textprocess_count_before, 
+            "count_after"  : textprocess_count_after
+        }
+    })
 
     df_concatenated.append(df)
 
