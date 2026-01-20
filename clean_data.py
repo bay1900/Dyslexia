@@ -15,6 +15,12 @@ config         = read_yaml("./config.yaml")
 http_config    = config[1]["http"]
 cleaning_config= config[1]["cleaning"]
 
+def text_process(text): 
+    text = str(text).lower()            # LOWERCASE TEXT
+    text = re.sub(r'[^\w\s]', '', text) # REMOVE PUNCTUATION
+    return text
+
+
 # GET ALL CSV FILES IN OUTPUTFOLDER
 folder_path = './data/out/'
 file_names = [] 
@@ -115,6 +121,14 @@ for i, file in enumerate(file_names):
         "rows_remaining": len(df),
         "rows_removed": int(post_rm_author)
     })
+    
+    
+    # ************** STEP 4 **************
+    
+    # LOWER TEXT, REMOVE PUNCTUATION, REMOVE STOP WORDS
+    
+    df["text"] = df["text"].apply( text_process )
+    
 
     df_concatenated.append(df)
 
